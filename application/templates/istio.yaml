@@ -1,0 +1,77 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: istio-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: istiodemoservice
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /eu
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: {{ .Values.image.name }}-{{.Values.deployment.depRegion}}-de
+        port:
+          number: {{ .Values.service.targetPort }}
+      weight: 30
+    - destination:
+        host: {{ .Values.image.name }}-{{.Values.deployment.depRegion}}-fr
+        port:
+          number: {{ .Values.service.targetPort }}
+      weight: 30
+    - destination:
+        host: {{ .Values.image.name }}-{{.Values.deployment.depRegion}}-es
+        port:
+          number: {{ .Values.service.targetPort }}
+      weight: 40
+  - match:
+    - uri:
+        prefix: /de
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: {{ .Values.image.name }}-{{.Values.deployment.depRegion}}-de
+        port:
+          number: {{ .Values.service.targetPort }}
+  - match:
+    - uri:
+        prefix: /fr
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: {{ .Values.image.name }}-{{.Values.deployment.depRegion}}-fr
+        port:
+          number: {{ .Values.service.targetPort }}
+  - match:
+    - uri:
+        prefix: /es
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: {{ .Values.image.name }}-{{.Values.deployment.depRegion}}-es
+        port:
+          number: {{ .Values.service.targetPort }}

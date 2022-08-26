@@ -1,0 +1,10 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.image.name }}-{{ .Values.deployment.depRegion }}
+data:
+  # Configuration values can be set as key-value properties
+  de: Freund
+  en: World
+  fr: Ami
+  es: Amigo
